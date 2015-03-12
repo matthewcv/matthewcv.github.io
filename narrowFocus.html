@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Narrow Focus </title>
+        <link rel="stylesheet" href="narrowFocus.css" type="text/css" />
+    </head>
+    <body>
+
+        <div class='nf-container'>
+            <div class='top'></div>
+            <div class='bottom'></div>
+        </div>
+
+        <script type="text/javascript" src="bower_components/handlebars/handlebars.min.js"></script>
+        <script type="text/javascript" src="narrowFocus.js"></script>
+
+
+        <script type="text/tpl" id="tpl-text">
+            <div class="nf-text nf-next"><span>{{text}}</span></div>
+        </script>
+
+        <script type="text/tpl" id="tpl-type-string">
+            <div class="nf-input nf-next">
+                <input type="text" />
+            </div>
+        </script>
+        <script type="text/tpl" id="tpl-type-number">
+            <div class="nf-input nf-next">
+                <input type="number" />
+            </div>
+        </script>
+        <script type="text/tpl" id="tpl-type-date">
+            <div class="nf-input nf-next">
+                <input type="date" />
+            </div>
+        </script>
+    </body>
+</html>
