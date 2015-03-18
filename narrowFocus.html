@@ -16,22 +16,27 @@
 
 
         <script type="text/tpl" id="tpl-text">
-            <div class="nf-text nf-next"><span>{{text}}</span></div>
+            
+            <div class="nf-text nf-next" id="text-{{idx}}"><div class="padding15"><span>{{text}}</span></div></div>
+        
         </script>
+        
 
         <script type="text/tpl" id="tpl-type-string">
-            <div class="nf-input nf-next">
-                <input type="text" />
+            <div class="nf-input nf-next" id="input-{{idx}}">
+                <div class="padding15">
+                    <input type="text" />
+                </div>
             </div>
         </script>
-        <script type="text/tpl" id="tpl-type-number">
-            <div class="nf-input nf-next">
-                <input type="number" />
+        <script type="text/tpl" id="tpl-type-start">
+            <div class="nf-input nf-next" id="input-{{idx}}">
+                <button class="nf-start-button">Let's do it!</button>
             </div>
         </script>
-        <script type="text/tpl" id="tpl-type-date">
-            <div class="nf-input nf-next">
-                <input type="date" />
+        <script type="text/tpl" id="tpl-type-end">
+            <div class="nf-input nf-next" id="input-{{idx}}">
+                
             </div>
         </script>
     </body>
