@@ -1,24 +1,20 @@
 ﻿
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro|Cabin|Oxygen);
 
-@font-face {
-	font-family: 'Aileron';
-	src: url('aileron/aileron.eot'); /* IE9 Compat Modes */
-	src: url('aileron/aileron.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-	     url('aileron/aileron.woff') format('woff'), /* Modern Browsers */
-	     url('aileron/aileron.ttf')  format('truetype'), /* Safari, Android, iOS */
-	     url('aileron/aileron.svg#svgFontName') format('svg'); /* Legacy iOS */
-    font-weight: normal;
-    font-style: normal;
 
+
+
+.ssp {
+    font-family: 'Source Sans Pro'; 
 }
 
-
-body {
+.c {
+    font-family: Cabin; 
 }
 
-
-.ail {
-    font-family: Aileron; 
+.o {
+    font-family: Oxygen; 
 }
+
 
 
