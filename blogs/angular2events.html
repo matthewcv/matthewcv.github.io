@@ -26,6 +26,8 @@
             var that = this;
             window.addEventListener("keydown", function(ev){
                 if(ev.ctrlKey && ev.altKey && ev.keyCode == 66){
+                    //This is all i have to do to toggle the visibility of the red box. Thanks to Zones it just works. 
+                    //In angular 1, I would have had to make an explicit call to $scope.$apply() 
                         that.showB = !that.showB;
                         console.log("show red box: ", that.showB)
                 }
@@ -50,7 +52,7 @@
                 host:{
                     '(window:keydown)':'ngKeyDown($event)'
                 }
-            })
+           })
         ]
         
         return AppComponent;
@@ -90,10 +92,10 @@
         
         
             <script type="text/html" id='my-app'>
-                <div class="ng-event-binding">use ctrl+alt+a to toggle visibility of this box. This uses the angular 
+                <div class="ng-event-binding">use <b>ctrl+alt+a</b> to toggle visibility of this box. This uses the angular 
                     template notation to handle the event
                     <div *ngIf="showA"></div></div>
-                <div class="addeventlistener-event-binding">use ctrl+alt+b to toggle visibility of this box. This 
+                <div class="addeventlistener-event-binding">use <b>ctrl+alt+b</b> to toggle visibility of this box. This 
                     uses window.addEventListener to handle the event<div *ngIf="showB"></div></div>
             </script>
     </body>
