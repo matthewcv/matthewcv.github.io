@@ -1,0 +1,54 @@
+<html>
+    <head>
+    <script>
+        document.write('<base href="' + document.location + '" />');
+    </script>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/2.0.0-beta.17/Rx.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/2.0.0-beta.17/angular2-polyfills.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/2.0.0-beta.17/angular2-all.umd.js"></script>
+    <script src="https://cdn.rawgit.com/requirejs/almond/0.3.1/almond.js"></script>
+    
+    <script>
+    requirejs(
+        ["AppComponent"],
+        (AppComponent) => {
+            
+            ng.platform.browser.bootstrap(AppComponent)
+        }
+    );
+    
+    define("AppComponent",[], function(){
+        
+        function AppComponent(){
+            this.message = "hello world"
+        }
+        
+        AppComponent.annotations = [
+            new ng.core.Component({
+                selector:'my-app',
+                directives:[],
+                template:getTpl('my-app')
+            })
+        ]
+        
+        return AppComponent;
+    })
+    
+     function getTpl(name){
+        return document.getElementById(name).innerHTML;
+    }
+
+
+    </script>
+    </head>
+    
+    <body>
+        <my-app ></my-app>
+        
+        
+            <script type="text/html" id='my-app'>
+                <div>{{message}}</div>
+            </script>
+    </body>
+</html>

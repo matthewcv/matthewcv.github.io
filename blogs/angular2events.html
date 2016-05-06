@@ -1,0 +1,100 @@
+<html>
+    <head>
+    <script>
+        document.write('<base href="' + document.location + '" />');
+    </script>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/2.0.0-beta.17/Rx.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/2.0.0-beta.17/angular2-polyfills.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/2.0.0-beta.17/angular2-all.umd.js"></script>
+    <script src="https://cdn.rawgit.com/requirejs/almond/0.3.1/almond.js"></script>
+    
+    <script>
+    requirejs(
+        ["AppComponent"],
+        (AppComponent) => {
+            
+            ng.platform.browser.bootstrap(AppComponent)
+        }
+    );
+    
+    define("AppComponent",[], function(){
+        
+        function AppComponent(){
+            this.showA = true;
+            this.showB = true;
+            var that = this;
+            window.addEventListener("keydown", function(ev){
+                if(ev.ctrlKey && ev.altKey && ev.keyCode == 66){
+                        that.showB = !that.showB;
+                        console.log("show red box: ", that.showB)
+                }
+                
+            })
+        }
+        
+        AppComponent.prototype.ngKeyDown = function ngKeyDown(ev){
+            
+            if(ev.ctrlKey && ev.altKey && ev.keyCode == 65){
+                    this.showA = !this.showA;
+                    console.log("show green box: ", this.showA)
+            }
+            
+        }
+        
+        AppComponent.annotations = [
+            new ng.core.Component({
+                selector:'my-app',
+                directives:[],
+                template:getTpl('my-app'),
+                host:{
+                    '(window:keydown)':'ngKeyDown($event)'
+                }
+            })
+        ]
+        
+        return AppComponent;
+    })
+    
+     function getTpl(name){
+        return document.getElementById(name).innerHTML;
+    }
+
+
+    </script>
+    
+    <style>
+        .ng-event-binding,
+        .addeventlistener-event-binding{
+            width: 350px; 
+            float: left;
+            padding: 10px;
+        }
+        
+        .ng-event-binding>div {
+            height: 100px;
+            width: 100px;
+            background: green   
+        }
+        .addeventlistener-event-binding>div {
+            height: 100px;
+            width: 100px;
+            background: red   
+        }
+        </style>
+    
+    </head>
+    
+    <body>
+        <my-app ></my-app>
+        
+        
+            <script type="text/html" id='my-app'>
+                <div class="ng-event-binding">use ctrl+alt+a to toggle visibility of this box. This uses the angular 
+                    template notation to handle the event
+                    <div *ngIf="showA"></div></div>
+                <div class="addeventlistener-event-binding">use ctrl+alt+b to toggle visibility of this box. This 
+                    uses window.addEventListener to handle the event<div *ngIf="showB"></div></div>
+            </script>
+    </body>
+</html>
