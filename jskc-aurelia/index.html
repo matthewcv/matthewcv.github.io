@@ -1,0 +1,588 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>Intro To Aurelia</title>
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/sky.css">
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h2>Intro To Aurelia</h2>
+				<h3>Matthew Vogt</h3>
+
+				<aside class="notes">
+					<p>I am a freelance developer, consultant, trainer. Mostly web and enterprise software with .net node and various front-end
+						frameworks.</p>
+				</aside>
+			</section>
+
+
+			<section>
+				<a href="http://aurelia.io">http://aurelia.io</a>
+				<blockquote class="fragment">Aurelia is a JavaScript client framework for mobile, desktop and web leveraging simple conventions and empowering creativity.</blockquote>
+				<p class="fragment">Lead by Rob Eisenberg</p>
+				<p class="fragment">Developed by a dedicated team of leads and core developers with hundreds of contributions from the open source community</p>
+				<aside class="notes">
+					<ol>
+						<li>the main website. From here you can get to documentation, the blog and various other things</li>
+						<li>the tagline</li>
+						<li>the creater. 10 years building UI frameworks including caliburn.micro and durandal.</li>
+					</ol>
+				</aside>
+			</section>
+			<section>
+				<h4>Highlights</h4>
+				<p>All the usual things you'd expect in a modern application framework</p>
+				<ul>
+					<li class="fragment">Data Binding and Templating</li>
+					<li class="fragment">Routing</li>
+					<li class="fragment">Dependency Injection</li>
+					<li class="fragment">HTTP Services</li>
+					<li class="fragment">Data Validation</li>
+					<li class="fragment">Testability</li>
+				</ul>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+			<section>
+				<h4>Some reasons you may want to use Aurelia and that set it apart from other frameworks</h4>
+				<ul>
+					<li class="fragment">Open source but comercially backed</li>
+					<li class="fragment">Convention over Configuration</li>
+					<li class="fragment">Extensible and Integrates with others</li>
+					<li class="fragment">Unobsrusive and easy</li>
+					<li class="fragment">Self contained</li>
+				</ul>
+
+				<aside class="notes">
+					<ol>
+						<li>uses the MIT license which is very permissive and popular. Backed by Bluespire.
+							<ul>
+								<li>Being comercially backed means that you can get support from the company that develops it and you can purchase enterprise
+									support services. This is important for some corporate dev shops that have strict rules about the kinds of software
+									and tools that they can use.</li>
+							</ul>
+						</li>
+						<li>The framework makes basic dicisions for you and stays out of your way. This reduces the amount of code you have to
+							write and helps developers follow solid patterns</li>
+						<li>It's modular and designed to be customized easily. As such, it works well with other libraries and frameworks. React,
+							Polymer, jQuery and anything else that you like can all be easily used inside an Aurelia application.  </li>
+						<li>You build your components with plain javascript and the framework stays out of your way making it easy to learn and
+							get started with.</li>
+						<li>everything you need to build an Aurelia applicaiton is packaged with Aurelia and there are no third party libraries
+							that you need to depend on or learn about. Standards-compliant javascript and HTML is all you need</li>
+					</ol>
+
+				</aside>
+			</section>
+
+			<section>
+
+				<section>
+					<h4>Application building blocks</h4>
+					<ul>
+						<li class="fragment">ES-Next or TypeScript</li>
+						<li class="fragment">Host page</li>
+						<li class="fragment">Module Loader/Bundler</li>
+						<li class="fragment">Bootstrapper/main module</li>
+						<li class="fragment">Components</li>
+					</ul>
+
+					<aside class="notes">
+						<p>the things you need to build an Aurelia application</p>
+						<ul>
+							<li>You can decide what you want to use, Aurelia has full support for both including type definition files for typescript
+								so you get all the tooling support you like. All the examples here will be in TypeScript</li>
+							<li>Aurelia doesn't care what you use for your back end so however you want to deliver a page from your server to your
+								browser is up to you. </li>
+							<li>You need to get javascript to the browser. Aurelia supports SystemJS and WebPack. It also has its own CLI which can
+								handle loading, bundling and a bunch of other stuff. </li>
+							<li>You need to get your application going. The bootstrapper is the first thing that executes and the main module is where
+								you configure and initialize your application</li>
+							<li>like many modern js frameworks, Aurelia applications are composed of a hierarchy of components. At a minimum, you
+								need a single root application component. </li>
+						</ul>
+					</aside>
+
+				</section>
+				<section>
+					<h4>Host page and loader</h4>
+					<pre><code class="html" data-trim data-noescape>
+&lt;!DOCTYPE html>
+&lt;html>
+  &lt;head>
+    &lt;title>Aurelia&lt;/title>
+  &lt;/head>
+  &lt;body aurelia-app="src/main">
+    &lt;script src="scripts/system.js">&lt;/script>
+    &lt;script src="scripts/config-typescript.js">&lt;/script>
+    &lt;script src="scripts/aurelia-core.min.js">&lt;/script>
+    &lt;script>
+      System.import('aurelia-bootstrapper');
+    &lt;/script>
+  &lt;/body>
+&lt;/html>
+
+						</code></pre>
+
+					<aside class="notes">
+						This is a very simple host page that gets served up to the browser. It does a few necessary things.
+						<ul>
+							<li>Using SystemJS for the module loader and referencing typescript and aurelia core libraries</li>
+							<li>aurelia-app attribute will tell the bootstrapper to host the aurelia application in the body element and bootstrap
+								it with a module named src/main. This attribute is required and aurelia won't work with out it. we can call our bootstrap
+								module whatever we want, though. 'src/main' is just the convention.
+							</li>
+							<li>Tell SystemJS to load the auralia bootstrapper module</li>
+						</ul>
+
+					</aside>
+				</section>
+
+				<section>
+					<h4>Main module</h4>
+
+					<p>src/main.ts</p>
+					<pre><code class="typescript" data-trim>
+import {Aurelia} from 'aurelia-framework';
+
+export function configure(aurelia: Aurelia) {
+  aurelia.use.basicConfiguration();
+  aurelia.start().then(() => aurelia.setRoot());
+}						</code></pre>
+					<aside class="notes">
+						<ul>
+							<li>
+								When the aurelia bootstrapper loads it looks for that aurelia-app attribute and then loads the module specified by the value
+								of that attribute.
+							</li>
+							<li>Your main module is required to export a single function called 'configure' that the framework will call. This is
+								where you configure your application and then start it. </li>
+							<li>This code tells aurelia to use its basic default configuration. There are all kinds of custom configuration options
+								that you can choose from. </li>
+							<li>When you start the application, you need to tell aurelia to load the root component. By convention, the root component
+								is called "app". If we wanted to call it something else we could and we would pass that name to setRoot()</li>
+							<li>*** This is all I need to do to bootstrap the app. I don't need to create any other kinds of configuration here or anywhere else
+								 to let Aurelia know what I need for this application. It uses conventions to work all that out for you.</li>
+						</ul>
+
+
+					</aside>
+				</section>
+
+				<section>
+					<h4>App Component</h4>
+					<p>The root container of our application.</p>
+					<p>In Aurelia, a component is a view and view-model pair. The view is for your UI markup and is written in HTML and the
+						view-model is a TypeScript (or JavaScript) class that contains the UI logic.</p>
+					<p>by convention, they have the same file name with the .html extension for the view and .ts (or .js) extension for the
+						view-model</p>
+
+					<aside class="notes">
+						
+					</aside>
+				</section>
+
+				<section>
+					<p>src/app.ts</p>
+					<pre><code class="typescript" data-trim>
+export class App {
+	message = "Hello from Aurelia!"
+}
+							</code></pre>
+					<p>src/app.html</p>
+					<pre><code class="html" data-trim>
+<template>
+	<h1>${message}</h1>
+</template>								
+							</code></pre>
+
+					<aside class="notes">
+						<ul>
+							<li>app.ts is nothing more than a simple typescript class. It exposes the properties and methods that we want to bind
+								to the UI.</li>
+							<li>app.html is an html template that contains the layout and static content for this component. Every Aurelia view
+								must have the template html element as its root element. </li>
+							<li>When we tell Aurelia to load a component by name, it will tell the module loader to go get the view and view-model files for that name. 
+								Then it will create an instance of your JavaScript class and bind it to the view. </li>
+							<li>The ${message} is an example of Aurelia's data binding syntax. This tells it to take the value of the message property and insert it at that location of the template</li>
+							<li>Then Aurelia will take the html generated from binding the view-model to the view and insert it into the DOM. Since this is the root component, Aurelia will append it to the element
+								that has the aurelia-app attribute. This is also just a convention that can be overridden. 
+							</li>
+							<li>*** you don't need any special annotations for what things this component is dependent on, where or what its view is or even the need to tell Aurelia that this is a component. 
+								Conventions do all that for you so the only thing you need to do is implement your application logic</li>
+						</ul>
+
+						<h4>take a quick look at the example</h4>
+					</aside>
+
+				</section>
+			</section>
+			<section>
+				<section>
+					<h4>Data Binding</h4>
+					<div class="fragment">
+						Data binding to HTML element attributes
+						<pre><code class="html" data-trim>
+<input type="text" value.bind="firstName">
+<input type="text" value.two-way="lastName">
+<input type="checkbox" checked.bind="likesBananas">
+
+<a class="external-link" href.bind="profile.blogUrl">Blog</a>
+<a class="external-link" href.one-way="profile.twitterUrl">Twitter</a>
+<a class="external-link" href.one-time="profile.linkedInUrl">LinkedIn</a>
+						</code></pre>
+
+					</div>
+
+					<aside class="notes">
+						<ul>
+							<li>Databinding is an important part of an application framework. It allows us to keep our application logic separate and disconnected from the UI so that we can test it better. 
+								It also means that we don't have to write a bunch of code for getting data in and out of the UI or for reacting to UI events. </li>
+							<li>attribute binding syntax: attribute name dot binding command equals expression. </li>
+							<li>demonstrating the 4 different attribute binding commands:
+								<ul>
+									<li>.bind is the default that you'll probably use most of the time. The framework picks the most appropriate type of binding to use. two-way for form elements and one-way for almost everything else</li>
+									<li>.two-way means the data flows in two directions. When either of the attribute value or view model property value change, the other will be updated</li>
+									<li>.one-way means the data only flows from the view-model to the view. </li>
+									<li>.one-time means the data only flows from the view-model to the view only one time. This is an optimization for cases where you know the data won't change so it'll instruct the framework stop observing the view-model property</li>
+								</ul>
+							</li>
+							<li>also shows that the binding expression can access nested properties of the view-model</li>
+							<li>you can bind practically any value to practically any html attribute</li>
+						</ul>
+						
+					</aside>
+				</section>
+				<section>
+					<h4>Data Binding</h4>
+					<div>
+						Data binding to HTML element events
+						<pre><code class="html" data-trim>
+<button type="button" click.trigger="cancel()">Cancel</button>
+
+<button type="button" click.delegate="select('yes')">Yes</button>
+<button type="button" click.delegate="select('no')">No</button>
+
+<input type="text" blur.trigger="elementBlurred($event.target)">    
+<input type="text" change.delegate="lastName = $event.target.value">
+						</code></pre>
+					</div>
+					<aside class="notes">
+						<ul>
+							<li>binding to events is similar to attributes: eventname dot binding command equals expression</li>
+							<li>the expression is usually a function call on your view-model but it doesn't need to be</li>
+							<li>you get a special $event property to provide access to the actual dom event object</li>
+							<li>.trigger vs .delegate
+								<ul>
+									<li>trigger attaches the event handler directly to the element and delegate attaches the event handler to an element high up the dom and then marshals the event back down to your view model.</li>
+									<li>delegate is the recommended approach and you should always use it unless you can't. certain events don't bubble up the DOM so you must use trigger. There are a few other cases that the documentation describes.</li>
+								</ul>
+							</li>
+						</ul>
+					</aside>
+				</section>
+
+			</section>
+			<section>
+				<h4>Templating</h4>
+				<div class="fragment">
+					Repeating 
+					<pre><code class="html">
+<p repeat.for="friend of friends">Hello, ${friend}!</p> 
+<p repeat.for="person of people">
+	<span>${person.name}</span>
+	<img src.bind="person.picture" >
+</p>						
+					</code></pre>
+				</div>
+
+				<div class="fragment">
+					Conditional Display
+					<pre><code class="html">
+<div if.bind="showme">some content</div>
+<div show.bind="showme">some content</div>
+					</code></pre>
+				</div>
+
+				<aside class="notes">
+					<p>Aurelia's Templating system is powerful and lets you do lots of things to compose your UI. </p>
+					
+					<h4>repeating</h4>
+					<p>binds to an iterable object and repeats that template for each item . You'll usually use arrays but you can also bind to Map and Set objects</p>
+					<p>friends is an array of strings</p>
+					<p>people is an array of person objects</p>
+
+					<h4>conditional display</h4>
+					<p>binds to a truthy object, two ways to show or hide content</p>
+					<p>if will remove the element from the dom</p>
+					<p>show will apply display:none style</p>
+
+					<h4>other things you can do with the templating system</h4>
+					<ul>
+						<li>You can bring in reusable chunks of HTML and inject them into your template</li>
+						<li>you can bind any arbitrary object to any arbitrary html template effectively allowing any view-model to be bound to any view </li>
+						<li>you can use specialized vew-spy and compile-spy attributes which emit Aurelia's internal objects to the console allowing you to see what it's doing to help with debugging</li>
+						<li>you can create custom elements and attributes allowing you to create re-usable portable and self-containd application pieces</li>
+					</ul>
+
+					<p>*** Notice in all of our templating and data binding syntax there aren't any funny symbols by our attribute names like perenthesis and square brackets and stars and hashes. Just words that make sense.</p>
+				</aside>
+			</section>
+			<section>
+				<section>
+					<h4>Routing</h4>
+					
+					<div >
+						Basic root route configuration in app.ts
+						<pre><code class="typescript" data-trim>
+import {RouterConfiguration, Router} from 'aurelia-router';
+
+export class App {
+  configureRouter(config: RouterConfiguration, router: Router): void {
+  this.router = router;
+  config.title = 'Aurelia';
+  config.map([
+    { route: ['', 'home'],       name: 'home',       moduleId: 'home/index',    nav: true },
+    { route: 'users',            name: 'users',      moduleId: 'users/index',   nav: true },
+    { route: 'users/:id/detail', name: 'userDetail', moduleId: 'users/detail' }
+    ]);
+  }
+}					</code></pre>
+					</div>
+
+
+					<aside class="notes">
+						<p>You configure routes by implementing a the configureRouter() function in your root component which gets called by the framework</p>
+						<h4>what's happening here:</h4>
+						<ul>
+							<li>importing the RouterConfiguration and Router types</li>
+							<li>Assign the router to a property on the app component so that we can access it later. It has useful features so you can navigate, dynamically add routes, inspect the configured routes or find out if the application is currently routing.
+								It also exposes the Navigation model which you can use to bind to the UI in a repeater to generate dynamic navigation.
+							</li>
+							<li>the title property on the RouterConfiguration sets the title of the HTML document. This is also exposed in other places so you can dynamically set the title based on the current route or other application state</li>
+							<li>the map function on the RouterConfiguration is where we configure the routes. It takes an array of route config objects. at a minimum they need three properties:
+								<ul>
+									<li>route - a string or array of strings which are a url pattern to match the location in the browser</li>
+									<li>name - the name of the route so we can refer to it later</li>
+									<li>moduleId - the component to activate for this route. Remember the naming convention here. home/index refers to an index.html and index.ts file in the home directory relative to where app.ts is</li>
+								</ul>
+								There are other properties as well. the nav property specifies that this route should go into the NavigationModel so that you can use it for UI binding. <br>
+								You can also add a settings property which can be any arbitrary data that will get passed to the component when it is activated. <br>
+								
+							</li>
+							<li>The route can have parameters. Indicated by the :id segment of the route. When the router does its work it will pull that value out of the URL and pass it to your component when it activates</li>
+						</ul>
+
+
+					</aside>
+				</section>
+				<section>
+					<h4>Routing</h4>
+					<div>Router view in app.html</div>
+					<pre><code class="html" data-trim>
+<template>
+  <router-view></router-view>
+</template>					</code></pre>
+
+					<aside class="notes">
+						<ul>
+							<li>the router needs to know where to inject the components into the dom. this is done with the router-view element in the template for your component.</li>
+							<li>It doesn't need to be the only content of this template, though. I can have links and headers and any other content I want in there. 
+								I can also have multiple router-view elements if i want a route to activate more than one component</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h4>Routing</h4>
+					<div>
+						Activating a component
+						<pre><code class="typescript" data-trim>
+import {RouteConfig} from 'aurelia-router';
+
+export class UserDetail {
+  activate(params: any, routeConfig: RouteConfig): Promise&lt;any> {
+    //the id parameter from the route will be in params.id
+	
+  }
+}
+						</code></pre>
+					</div>
+
+					<aside class="notes">
+						<ul>
+							<li>Components have a screen activation lifecycle. </li>
+							<li>implement the activate function to get access to the route parameters and other info about routing including any query string parameters or other things that you may have set when you configured the routes.</li>
+							<li>the routeConfig argument also has a title property which you can use to set the document title for the browser window.</li>
+							<li>notice that the activate function returns a Promise. This is optional but very useful. If you do return a promise, the router will wait for it to resolve before continuing with the lifecycle. 
+								This gives you the ability to do asyncronous things like load data from an HTTP service.								
+							</li>
+							<li>You can also implement 3 other lifecycle hooks: canActivate, canDeactivate and deactivate.</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h4>Routing</h4>
+					Other fun features of the Aurelia router
+					<ul>
+						<li class="fragment">Push State</li>
+						<li class="fragment">Nested Routers</li>
+						<li class="fragment">Redirects and Unknown Routes</li>
+						<li class="fragment">Navigation Pipeline</li>
+						<li class="fragment">Layouts</li>
+					</ul>
+
+					<aside class="notes">
+						<ul>
+							<li>push state - by default, Aurelia's routes are based on the URL Hash. you can also configure it to use pushState instead. </li>
+							<li>nested routers - any component can implement that configureRouter function. I could have a user component that routes to /users and in the that component define a /profile route and a /activity route. 
+								Routes that you define in a component are relative to that component. in our case the profile component would be activated when the browser goes to the /users/profile location.
+							</li>
+							<li>redirects/unknowns - any route you configure can be redirected to a specific route. The router can also be instructed to activate a specific component or route if the url in the browser can't be matched to any known route</li>
+							<li>navigation pipeline - you can hook into steps of the navigation pipeline at the root applicaiton router. this allows you to take global action as routes go through 4 pipeline steps:
+								authorize, preActivate, preRender, postRender. While you are in a pipeline step, you can cancel or manipulate the current navigation instruction 
+							</li>
+							<li>layouts - you can define layout templates for routes. Multiple routes can use the same layout template and a layout template can optionally be bound to a view-model</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section>
+				<h4>Dependency Injection</h4>
+				<p>Everyhthing is injectable and most things can be injected</p>
+				<div class="fragment">
+					Injecting a service into a component
+					<pre><code class="typescript" data-trim>
+import {RouteConfig} from 'aurelia-router';
+import {autoinject} from 'aurelia-framework';
+import {UserService} from 'services/user-service';
+
+@autoinject
+export class UserDetail {
+  constructor(private userService: UserService){}
+
+  activate(params: any, routeConfig: RouteConfig): Promise&lt;any> {
+    return this.userService.getUser(params.id).then(users => {
+	  this.users = users;	
+	})
+  }
+}
+					</code></pre>
+				</div>
+
+				<aside class="notes">
+					<ul>
+						<li>this is the UserDetail component from the routing example but we've injected the UserService into it</li>
+						<li>I need to import the UserService so that my component can know something about it</li>
+						<li>I need to import the autoinject annotation and decorate my class with it. This is typescript specific. 
+							This tells the framework to reflect on the constructor parameters and infer the types to inject
+							<ul>
+								<li>this won't work for plain javascript because there is no type information defined on the constructor. You have to use the @inject annotation instead to specify the types and order of parameters to inject</li>
+							</ul></li>
+						<li>I need to create constructor parameters.</li>
+					
+					</ul>
+					<p>That's it. Now whenever this class gets instanciated it will be injected with an instance of UserService.</p>
+					<p>*** notice that we didn't have to configure any providers or do anything special for Aurelia to know what to do.</p>
+					This is as simple as it gets but there's much more you can do.
+					<ul>
+						<li>you can get access to the DI container and manipulate it if you want</li>
+						<li>you can create custom object lifetimes for the types that you register and inject</li>
+						<li>you can create and use child containers</li>
+						<li>services can be lazy-loaded or have a new instance created every time</li>
+					</ul>
+				</aside>
+			</section>
+
+			<section>
+				<h4>Creating a new Aurelia application</h4>
+				<p class="fragment">Two easy ways to get started: Skeleton Projects and the CLI</p>
+				<ul class="fragment">
+					<li>Skeleton projects are empty applications pre-configured with everything you need to get started</li>
+					<li><a target="_blank" href="https://github.com/aurelia/skeleton-navigation">https://github.com/aurelia/skeleton-navigation</a> </li>
+				</ul>
+				<ul class="fragment">
+					<li>The CLI gives you the flexibility to create a new blank application with more configuration options</li>
+					<li><a target="_blank" href="http://aurelia.io/hub.html#/doc/article/aurelia/framework/latest/the-aurelia-cli/1">http://aurelia.io/hub.html#/doc/article/aurelia/framework/latest/the-aurelia-cli/1</a></li>
+				</ul>
+				<aside class="notes">
+					<ul>
+						<li>Our hello world example is neat because it's easy and lets you experiment with Aurelia but obviously not appropriate for a real production-ready project.</li>
+						<li>Skeleton - choose with or without asp.net core as a back-end. choose typescript or javascript. choose SystemJS or WebPack.</li>
+						<li>looking at skeleton-typescript
+							<ul>
+								<li>Everything you need to start development with typescript and SystemJS</li>
+								<li>includes unit tests, integration tests, a development web-server with browser sync, bundling and packaging for produciton deployments</li>
+
+							</ul>
+						</li>
+
+						<li>CLI - au new, follow the prompts</li>
+						<li>au run</li>
+					</ul>
+				</aside>
+			</section>
+
+			<section>
+				<h4>What else?</h4>
+				<ul class="fragment" style="list-style:none;">
+					<li style="text-decoration:underline;">Useful Links</li>
+					<li>Aurelia Documentation - <a target="_blank" href="http://aurelia.io/hub.html">http://aurelia.io/hub.html</a>. </li>
+					<li>Aurelia Blog - <a target="_blank" href="http://blog.aurelia.io/">http://blog.aurelia.io/</a> Information about releases, how-to articles, other news. </li>
+					<li>Jeremy Danyow's blog - <a target="_blank" href="https://www.danyow.net/">https://www.danyow.net/</a> One of the Aurelia team leads, lots of good posts about how Aurelia works and how to do stuff with it. </li>
+					<li>The Source Code, obviously - <a target="_blank" href="https://github.com/aurelia">https://github.com/aurelia</a>. </li>
+					<li><a target="_blank" href="http://builtwithaurelia.com/">http://builtwithaurelia.com/</a> - A website that showcases lots of cool stuff folks have built with and for Aurelia.</li>
+				</ul>
+				<p class='fragment'>
+					<u>Any Questions?</u>
+				</p>
+			</section>
+		</div>
+	</div>
+
+
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+
+	<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+				center: false,
+				width:1100,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback:function(){hljs.configure({tabReplace:'    '});  hljs.initHighlighting();} }
+				]
+			});
+		</script>
+</body>
+
+</html>
