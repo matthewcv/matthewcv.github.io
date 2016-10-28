@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <title>Shuffler Sorter</title>
+    </head>
+<body>
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="input-group" id="nameInput"> 
+                <input class="form-control" id="name" placeholder="Name..."> 
+                <span class="input-group-btn"> 
+                    <button class="btn btn-default" id="add" type="button">Add</button> 
+                </span> 
+            </div>
+        </div>
+        <div class="col-md-4" >
+            <div class="list-group" id="names"></div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group"> 
+                <input class="form-control" type="number" id="numGroups" placeholder="How many groups"> 
+                <span class="input-group-btn"> 
+                    <button class="btn btn-default" id="doit" type="button">Do it</button> 
+                    <button class="btn btn-default" id="putback" type="button" style="display:none">Put them back</button>
+                </span> 
+            </div>
+            <div id="groups">
+
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #groups .remove-button{
+        display:none;
+    }
+</style>
+
+<script>
+(function(){
+    var addBtn = document.querySelector("#add");
+    var nameInput = document.querySelector("#name");
+    var doitBtn = document.querySelector("#doit");
+    var putbackBtn = document.querySelector("#putback");
+    var groupsDiv = document.querySelector("#groups");
+    var namesDiv = document.querySelector("#names");
+    var numGroupsInput = document.querySelector("#numGroups");
+    
+    var nameDivs = [];
+
+
+    putbackBtn.addEventListener('click',putThemBack);
+
+    doitBtn.addEventListener('click',doIt)
+
+    addBtn.addEventListener('click',addName)
+    nameInput.addEventListener('keyup', function(ev){
+        if(ev.keyCode == 13){
+            addName();
+        }
+    })
+    numGroupsInput.addEventListener('keyup', function(ev){
+        if(ev.keyCode == 13){
+            doIt();
+        }
+    })
+    function putThemBack(){
+        if(groupsDiv.lastChild){
+            nameDivs.forEach(function(div){
+                namesDiv.appendChild(div);
+            })
+            while(groupsDiv.lastChild){
+                groupsDiv.removeChild(groupsDiv.lastChild)
+            };
+            document.querySelector("#nameInput").style.display = "";
+            putbackBtn.style.display = "none";
+        }
+    }
+
+    function doIt(){
+        if(nameDivs.length == 0){
+            alert('add some names, dummy');
+            return;
+        }
+        var numGroups = numGroupsInput.valueAsNumber;
+        if(numGroups > nameDivs.length){
+            numGroups = nameDivs.length;
+            numGroupsInput.value = numGroups;
+        }
+        if(numGroups && numGroups > 0){
+            putThemBack();
+            document.querySelector("#nameInput").style.display = "none";
+            putbackBtn.style.display ="";
+
+            for(var i = 1; i <= numGroups; i++){
+                var listGroup = document.createElement("div");
+                listGroup.className = "list-group"; 
+
+                var headerItem = document.createElement("div");
+                headerItem.className = "list-group-item active";
+                headerItem.appendChild(document.createTextNode("Group " + i));
+                listGroup.appendChild(headerItem);
+
+                groupsDiv.appendChild(listGroup);
+
+            }
+
+            while(namesDiv.lastChild){
+                for(var i = 0; i < numGroups; i ++){
+                    if(namesDiv.lastChild){
+                        var item = namesDiv.childNodes[Math.floor(Math.random()*namesDiv.childNodes.length)];
+
+                        groupsDiv.childNodes[i].appendChild(item);
+                    }    
+                }
+            }
+
+        }else{
+            alert('need a number bigger than zero, dummy');
+            numGroupsInput.focus();
+        }
+    }
+
+    function addName(){
+        var name = nameInput.value;
+        nameInput.value = null;
+        
+        var div  = document.createElement("div");
+        div.appendChild(document.createTextNode(name));
+        div.className = "list-group-item name-item";
+
+        var remove = document.createElement("span")
+        remove.className = "glyphicon glyphicon-remove-circle pull-right remove-button";
+        remove.addEventListener('click', function(){
+            names.removeChild(div);
+            var idx = nameDivs.indexOf(div);
+            nameDivs.splice(idx,1);
+        })
+
+        div.appendChild(remove);
+        nameDivs.push(div);
+        namesDiv.appendChild(div);
+
+        nameInput.focus();
+    }
+
+    //maybe play with this later. https://www.html5rocks.com/en/tutorials/device/orientation/
+    //shake to shuffle!
+
+})();
+</script>
+</body>
+</html>
