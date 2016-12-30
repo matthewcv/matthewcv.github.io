@@ -1,0 +1,187 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+
+
+
+<script>
+
+    var oneSixtiethDeg = 360 * (1/60);
+    var oneTwelvethDeg = 360 * (1/12);
+    
+    class TwelveHourRoundClock{
+
+        constructor(renderer){
+            this.renderer = renderer;
+        }
+
+        showCurrentTime(){
+            var now = new Date();
+            this.renderer.render(
+                this.getHoursDegrees(now),
+                this.getMinutesDegrees(now),
+                this.getSecondsDegrees(now)
+            );
+
+        }
+
+        getSecondsDegrees(moment){
+            
+            var secs = moment.getSeconds();
+            var mils = moment.getMilliseconds();
+
+            var secsdeg = oneSixtiethDeg * secs;
+            var milsdeg = oneSixtiethDeg * mils/1000;
+            
+            var arc = secsdeg + milsdeg;
+
+            return arc;
+        }
+
+        getMinutesDegrees(moment){
+            var mins = moment.getMinutes();
+            var secs = moment.getSeconds();
+            var mils = moment.getMilliseconds();
+
+            var minsdeg = oneSixtiethDeg * mins;
+            var secsdeg = oneSixtiethDeg * secs/60;
+            var milsdeg = oneSixtiethDeg * 1/60 * mils/1000;
+
+            var arc = minsdeg + secsdeg + milsdeg;
+
+            return arc;
+        }
+
+        getHoursDegrees(moment){
+            var hrs = moment.getHours();
+            var mins = moment.getMinutes();
+            var secs = moment.getSeconds();
+            var mils = moment.getMilliseconds();
+
+            if(hrs > 12){
+                hrs = hrs-12;
+            }
+
+            var hrsdeg = oneTwelvethDeg * hrs;
+            var minsdeg = oneTwelvethDeg * mins/60 ;
+            var secsdeg = oneTwelvethDeg * 1/60 * secs/60;
+            var milsdeg = oneTwelvethDeg * 1/60 * 1/60 * mils/1000;
+
+            var arc =hrsdeg + minsdeg + secsdeg + milsdeg 
+            return arc;
+        }
+
+        
+    }
+
+    class Renderer{
+
+        constructor(){
+
+            this.buildClock();
+
+            
+        }
+
+        buildClock(){
+            this.clock = this.makeElement('svg',{width:400, height:400});
+            this.makeElement('circle', {
+                cx:200, cy:200, r:195, stroke:'orange', 'stroke-width':10, fill:'purple'
+            },this.clock);
+            
+            for(var i = 0; i < 12; i++){
+                var y2 = i%3 == 0? 60:45;
+                var strokeWidth = i%3 == 0? 3:2;
+                var rotate = 30 * i;
+                this.makeElement("line",{
+                    x1:200,
+                    y1:15,
+                    x2:200,
+                    y2: y2,
+                    stroke:'white',
+                    'stroke-linecap':'round',
+                    'stroke-width': strokeWidth,
+                    style:{
+                        transformOrigin:'200px 200px',
+                        transform:`rotate(${rotate}deg)`
+                    }
+                }, this.clock);
+            }
+
+            this.hours = this.makeElement('circle',{
+                cx:200,
+                cy:30,
+                r:10,
+                fill:"#EA2533",
+                style:{transformOrigin:'200px 200px'}
+            },this.clock);
+            this.minutes = this.makeElement('circle',{
+                cx:200,
+                cy:30,
+                r:7,
+                fill:"#FEBC1F",
+                style:{transformOrigin:'200px 200px'}
+            },this.clock);
+            this.seconds = this.makeElement('circle',{
+                cx:200,
+                cy:30,
+                r:4,
+                fill:"#4470E6",
+                style:{transformOrigin:'200px 200px'}
+            },this.clock);
+            this.seconds2 = this.makeElement('circle',{
+                cx:200,
+                cy:75,
+                r:8,
+                fill:"white",
+                style:{transformOrigin:'200px 200px'}
+            },this.clock);
+            document.body.appendChild(this.clock);
+        }
+
+        makeElement(name, attrs, parent){
+            var el = document.createElementNS("http://www.w3.org/2000/svg", name);
+            for(var attr in attrs){
+                if(attr == 'style'){
+                    var styles = attrs[attr];
+                    for(var styleName in styles){
+                        el.style[styleName] = styles[styleName];
+                    }
+                }else{
+                el.setAttribute(attr, attrs[attr]);
+                }
+            }
+
+            if(parent){
+                parent.appendChild(el);
+            }
+            return el;
+
+        }
+
+        render(hrsArc, minsArc, secsArc){
+
+            this.hours.style.transform = `rotate(${hrsArc}deg)`;
+            this.minutes.style.transform = `rotate(${minsArc}deg)`;
+            this.seconds.style.transform = `rotate(${secsArc}deg)`;
+
+            this.seconds2.setAttribute('cx', Math.cos((secsArc-90) * Math.PI / 180) * 140 + 200);
+            this.seconds2.setAttribute('cy' ,  Math.sin((secsArc-90) * Math.PI / 180) * 140 + 200);
+        }
+    }
+
+    
+
+    var thrc = new TwelveHourRoundClock(new Renderer());
+    
+    function showTheTime(){
+        thrc.showCurrentTime();
+        requestAnimationFrame(showTheTime);
+    }
+    requestAnimationFrame(showTheTime);
+</script>
+        
+    </body>
+</html>
