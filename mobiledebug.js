@@ -1,4 +1,5 @@
 (function(){
+    if(console.$mobiledebug)return;
 
     var md = {};
     console.$mobiledebug = md;
