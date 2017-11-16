@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Mobile Debug</title>
+    <script src="mobiledebug.js"></script>
+    <style>
+        .whatitis{
+            padding: 10px;
+            margin: 10px;
+            background-color: rgb(215, 223, 233);
+
+            color: rgb(11, 11, 124);
+        }
+        code{
+            background-color: lightgrey;
+            color:black;
+        }
+        .filler{
+            height: 100px;
+            margin: 10px;
+            background-color: lightgreen;
+        }
+
+        .filler:nth-of-type(3n+2){
+            background-color: lightcoral;
+        }
+
+        .filler:nth-of-type(3n+3){
+            background-color: lightseagreen;
+        }
+    </style>
+</head>
+<body>
+    <div class="whatitis">
+    <p>You can't easily use <code>console.log()</code> with mobile browsers because they don't really have a developer console.</p>
+    <p>This is a very simple implementation of <code>console</code> that displays its output in a fixed dom element so that you can see your messages.
+    For now it only implements <code>log(), info(), warn(), error()</code></p>
+    <p>you can drag it up and down and collapse it with the buttons on the left. Dragging only works with touch since this is really only for mobile.</p>
+    <p>You can create a bookmarklet with <a href="javascript:alert('hi')">this link</a> so that you can use it on any site.</p>
+    </div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <div class="filler"></div>
+    <script>
+        console.log('hello from mobiledebug.js!','arg2','arg3');
+        console.info('info from mobiledebug.js!','arg2','arg3');
+        console.warn('warn from mobiledebug.js!','arg2','arg3');
+        console.error('error from mobiledebug.js!','arg2','arg3');
+        
+    </script>
+</body>
+</html>
