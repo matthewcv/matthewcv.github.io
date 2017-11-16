@@ -145,4 +145,6 @@
         
     }
 
+    console.info('Mobile Debug Console activated.')
+
 })() 
