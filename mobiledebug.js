@@ -85,14 +85,16 @@
                transition: "width .5s, height .5s"
            });
            var consoleContent = `
-           <div style="background-color:#eee; width:100%; position:absolute; height:100%; padding:5px 40px 5px 5px; box-sizing:border-box; overflow: auto; white-space: nowrap "></div>
+           <div style="background-color:#eee; width:100%; position:absolute; height:100%; padding:3px 43px 3px 3px; box-sizing:border-box; ">
+            <div style="width:100%;height:100%;overflow: auto;  "></div>
+           </div>
            <div style="width: 40px; height: 40px; position:absolute; top:0; right: 0; box-sizing:border-box; background-color:#555; color:#eee; font-size:40px; line-height:40px; text-align:center">⇕</div>
            <div style="transition: top .5s, transform .5s; width: 40px; height: 40px; position:absolute; top:42px; right: 0; box-sizing:border-box; background-color:#555; color:#eee; font-size:40px; line-height:40px; text-align:center">⇲</div>
            `;
            theUi.innerHTML = consoleContent;
            document.body.appendChild(theUi);
            md.ui = theUi;
-           md.content = md.ui.firstElementChild;
+           md.content = md.ui.firstElementChild.firstElementChild;
            md.mover = md.ui.children[1];
            md.collapser = md.ui.children[2];
            md.mover.addEventListener("touchstart", md.movertouchstart);
@@ -126,6 +128,7 @@
     md.movertouchstart = function(e){
         md.lastmovetouch = e.changedTouches[0];
         e.preventDefault();
+        e.stopPropagation();
     }
     md.movertouchmove = function(e){
 
@@ -137,11 +140,14 @@
         
         md.ui.style.bottom = b + "px"
         e.preventDefault();
+        e.stopPropagation();
+        
     }
     md.movertouchend = function(e){
         
         md.lastmovetouch = null;
         e.preventDefault();
+        e.stopPropagation();
         
     }
 
