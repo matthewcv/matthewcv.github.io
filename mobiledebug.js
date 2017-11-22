@@ -91,6 +91,7 @@
            </div>
            <div style="width: 40px; height: 40px; position:absolute; top:0; right: 0; box-sizing:border-box; background-color:#555; color:#eee; font-size:40px; line-height:40px; text-align:center">⇕</div>
            <div style="transition: top .5s, transform .5s; width: 40px; height: 40px; position:absolute; top:42px; right: 0; box-sizing:border-box; background-color:#555; color:#eee; font-size:40px; line-height:40px; text-align:center">⇲</div>
+           <div style="width: 40px; height: 40px; position:absolute; top:84px; right: 0; box-sizing:border-box; background-color:#555; color:#eee; font-size:40px; line-height:40px; text-align:center">⌧</div>
            `;
            theUi.innerHTML = consoleContent;
            document.body.appendChild(theUi);
@@ -98,11 +99,13 @@
            md.content = md.ui.firstElementChild.firstElementChild;
            md.mover = md.ui.children[1];
            md.collapser = md.ui.children[2];
+           md.clearer = md.ui.children[3];
            md.mover.addEventListener("touchstart", md.movertouchstart);
            md.mover.addEventListener("touchmove", md.movertouchmove);
            md.mover.addEventListener("touchend", md.movertouchend);
            md.mover.addEventListener("touchcancel", md.movertouchend);
            md.collapser.addEventListener("click", md.collapserclick)
+           md.clearer.addEventListener("click", md.clearerclick)
         }
     }
 
@@ -122,6 +125,12 @@
             md.ui.style.width = "40px";
             md.ui.style.height = "40px";
             md.iscollapsed = true;
+        }
+    }
+
+    md.clearerclick = function(){
+        while(md.content.lastChild){
+            md.content.removeChild(md.content.lastChild);
         }
     }
 

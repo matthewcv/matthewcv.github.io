@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" id='document'>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Touching</title>
+    <script>
+
+        var evts = ['touchstart','touchmove','touchend','touchcancel','click','mousedown','mouseup','mousemove','contextmenu'];
+        var els = [{name:"Box 2", id:"box2"},{name:"Box 1", id:"box1"},{name:"document", id:"document"}];
+
+        function makeControls(){
+            var content = "";
+
+            for(let evt of evts){
+                
+
+                    content += `        
+        <h3>
+        ${evt}
+        </h3>`
+        for(let el of els){
+            content +=`
+        <div>
+            <label><input type="checkbox" name="${evt}" value="${el.id}" >${el.name}</label>
+            <label><input type="checkbox" name="${evt}-preventDefault" value="${el.id}" >Prevent Default</label>
+            <label><input type="checkbox" name="${evt}-stopPropagation" value="${el.id}">Stop Propagation</label>
+        </div>
+`;
+
+
+                }
+            }
+            document.forms.events.innerHTML = content;
+        }
+        function handler(evt){
+            
+            let toHandle = document.forms.events.elements[evt.type];
+            for(let el of toHandle){
+                if(el.value === this.id && el.checked){
+                    console.log(this.nodeName, this.id,evt.type);
+                    
+                    for(let func of ["preventDefault","stopPropagation"]){
+                        let toFunc = document.forms.events.elements[evt.type + "-" + func];
+                        for(let tpel of toFunc){
+                            if(tpel.value === this.id && tpel.checked){
+                                evt[func]();
+                            }
+                        }
+
+                    }
+
+
+                }
+            }
+        }
+        function addEvents(){
+            for(let evt of evts){
+                for(let el of els){
+                    document.getElementById(el.id).addEventListener(evt,handler)
+                }
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", e =>{
+            
+            makeControls();
+            addEvents();
+
+    });
+        
+    </script>
+    <style>
+        #box1{
+           
+            width: 90%;
+            height: 250px;
+            background-color: lightcoral;
+            margin:80px auto;
+
+        }
+
+        #box2{
+            width: 85%;
+            height: 150px;
+            background-color: lightseagreen;
+            margin:40px auto;
+        }
+        h3{
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="box1">Box 1
+        <div id="box2">Box 2</div>
+    </div>
+
+    <div>
+        <form name="events">
+        </form>        
+    </div>
+
+    <div style="height:200px"></div>
+    <script src="mobiledebug.js"></script> 
+    
+</body>
+
+</html>
