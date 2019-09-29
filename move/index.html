@@ -38,6 +38,8 @@
             width: calc(1 /11 * 100%);
             transform: scale(.9);
             position:relative;
+            font-size: calc(1 /11 * 100vw);
+
         }
 
         .peg {
@@ -49,24 +51,37 @@
             position:absolute;
             top:5%;
             left:5%;
+            transform: translateY(0);
+            box-shadow: none;
+            transition: transform .25s, box-shadow .25s;
+
+        }
+
+        .peg:hover {
+            transform: translateY(-10%);
+            box-shadow: 0 .1em .1em .05em rgba(0,0,0,.6);
         }
 
         .red {
             background-color:red;
+            color: red;
         }
 
         .green{
             background-color:green;
+            color: green;
         }
+
+
     </style>
 </head>
 <body>
     
-    <div>Try to move them from one side to the other. You can only go in one direction. One space at a time or jump one of the opposite color</div>
+    <div>Try to move them from one side to the other. You can only go in one direction. One space at a time or jump one.</div>
     <div class="board-outer">
         <div class='board-inner'>
-                <div class='hole'><div class="peg red"></div></div>
-                <div class='hole'><div class="peg red"></div></div>
+            <div class='hole'><div class="peg red"></div></div>
+            <div class='hole'><div class="peg red"></div></div>
             <div class='hole'><div class="peg red"></div></div>
             <div class='hole'><div class="peg red"></div></div>
             <div class='hole'><div class="peg red"></div></div>
