@@ -1,3 +1,3 @@
 export const Password = {
-    template: `password`
+    template: `random password generating stuff will go here`
 }

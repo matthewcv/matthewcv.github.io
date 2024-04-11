@@ -1,6 +1,6 @@
 import { createApp, ref, computed } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 import { TicksTocks } from './tickstocks.js'
-import { Password } from './password.js'
+import { Rando } from './rando.js'
 
 
 
@@ -11,9 +11,9 @@ const pages = [
         component: TicksTocks
     },
     {
-        hash:"#/password",
-        label:"Password",
-        component: Password
+        hash:"#/rando",
+        label:"Rando",
+        component: Rando
     }
 ]
 
@@ -65,7 +65,9 @@ const Content = {
         }
     },
     template:`
+
     <component :is="currentPage"></component>
+
     `
 }
 
