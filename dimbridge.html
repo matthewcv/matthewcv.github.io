@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diminishing Bridge Scorecard</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font from Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for the table */
+        #scorecard-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        #scorecard-container::-webkit-scrollbar-track {
+            background: #d1d5db; /* bg-gray-300 */
+        }
+        #scorecard-container::-webkit-scrollbar-thumb {
+            background-color: #9ca3af; /* bg-gray-400 */
+            border-radius: 4px;
+        }
+        .score-input {
+            width: 4rem; /* Fixed width for input fields */
+            text-align: center;
+        }
+        .player-name-editable {
+            cursor: pointer;
+            outline: none;
+            border-bottom: 1px dashed transparent;
+            transition: border-color 0.2s;
+        }
+        .player-name-editable:focus {
+            border-bottom: 1px dashed #2563eb; /* blue-600 */
+        }
+        .new-player-input {
+            outline: none;
+            background: transparent;
+            border-bottom: 1px solid #6b7280; /* gray-500 */
+            padding-left: 0.5rem;
+            color: #1f2937; /* gray-800 */
+        }
+        .new-player-input::placeholder {
+            color: #6b7280; /* gray-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 p-4 sm:p-8 flex flex-col items-center min-h-screen">
+
+    <div class="container mx-auto max-w-5xl bg-white p-6 rounded-xl shadow-2xl space-y-6">
+
+        <!-- Header and Controls -->
+        <header class="text-center mb-6">
+            <h1 class="text-4xl font-extrabold text-blue-600">Diminishing Bridge Scorecard</h1>
+            <p class="mt-2 text-gray-600">A simple tool to keep track of scores for your game of Diminishing Bridge.</p>
+        </header>
+
+        <!-- Player List and Game Controls -->
+        <div id="game-controls" class="bg-gray-200 p-4 rounded-lg shadow-inner mt-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 text-gray-800">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-bold">Players:</span>
+                    <!-- Player names will be injected here along with the input field -->
+                    <div id="player-list" class="flex flex-wrap items-center gap-2"></div>
+                </div>
+                <!-- Start/Reset button is now on the same line as the player list -->
+                <button id="start-reset-btn" class="px-6 py-2 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-200 transition-all disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed disabled:hover:bg-gray-400">Start</button>
+            </div>
+        </div>
+
+        <!-- Scorecard Table -->
+        <div id="scorecard-container" class="mt-6 overflow-x-auto">
+            <table id="scorecard" class="min-w-full bg-white border-collapse rounded-lg shadow-lg">
+                <thead>
+                    <tr class="bg-gray-300 text-gray-800">
+                        <th class="py-3 px-2 sm:px-4 text-center rounded-tl-lg">Round</th>
+                        <th class="py-3 px-2 sm:px-4 text-center">Cards</th>
+                        <th class="py-3 px-2 sm:px-4 text-center">Total Bid</th>
+                        <!-- Player headers will be added here by JS -->
+                    </tr>
+                </thead>
+                <tbody id="scorecard-body">
+                    <!-- Scorecard rows will be dynamically added here -->
+                </tbody>
+                <tfoot id="scorecard-footer" class="bg-gray-300 text-blue-600 font-bold">
+                    <tr>
+                        <td class="py-3 px-2 sm:px-4 text-center">Total</td>
+                        <td class="py-3 px-2 sm:px-4 text-center"></td>
+                        <td class="py-3 px-2 sm:px-4 text-center"></td>
+                        <!-- Total scores will be added here -->
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Use a single object to manage all game state
+        let gameState = {
+            players: [],
+            scores: [], // 2D array: scores[roundIndex][playerIndex]
+            bids: [],   // 2D array: bids[roundIndex][playerIndex]
+            taken: [],  // 2D array: taken[roundIndex][playerIndex]
+            rounds: [], // Array of objects with round details
+            currentRound: 0,
+            isGameStarted: false
+        };
+
+        const maxCards = 10; // Starting cards, change this to your preference (e.g., 7 or 13)
+        const playersMin = 2; // Minimum number of players
+
+        // DOM elements
+        const playerListDiv = document.getElementById('player-list');
+        const scorecardHead = document.querySelector('#scorecard thead tr');
+        const scorecardBody = document.getElementById('scorecard-body');
+        const scorecardFooter = document.getElementById('scorecard-footer');
+        const startResetButton = document.getElementById('start-reset-btn');
+
+        /**
+         * Renders the current list of players and the input field.
+         */
+        function renderPlayerList() {
+            playerListDiv.innerHTML = '';
+            
+            // Render existing player names as editable spans
+            const playerNamesHtml = gameState.players.map((p, index) =>
+                `<span class="bg-blue-600 px-3 py-1 rounded-full text-sm text-white player-name-editable" contenteditable="true" data-player-index="${index}" onblur="updatePlayerName(event)" onkeydown="if(event.key === 'Enter') { event.preventDefault(); this.blur(); }">${p}</span>`
+            ).join('');
+            playerListDiv.innerHTML = playerNamesHtml;
+
+            // Append a new input field for adding new players, but only if the game has not started.
+            if (!gameState.isGameStarted) {
+                const newInput = document.createElement('input');
+                newInput.type = 'text';
+                newInput.className = 'new-player-input w-36';
+                newInput.placeholder = 'Add new player...';
+                newInput.id = 'new-player-input';
+                newInput.onkeydown = (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addNewPlayer(newInput.value.trim());
+                        newInput.focus();
+                    }
+                };
+                playerListDiv.appendChild(newInput);
+            }
+            
+            // Update the button based on the game state
+            if (gameState.isGameStarted) {
+                startResetButton.textContent = 'Reset';
+                startResetButton.onclick = resetGame;
+                startResetButton.className = 'px-6 py-2 bg-red-600 text-white font-bold rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-200 transition-all';
+                startResetButton.disabled = false;
+            } else {
+                startResetButton.textContent = 'Start';
+                startResetButton.onclick = startGame;
+                startResetButton.className = 'px-6 py-2 bg-green-600 text-white font-bold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-200 transition-all disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed disabled:hover:bg-gray-400';
+                
+                // Disable the start button if there are not enough players
+                if (gameState.players.length >= playersMin) {
+                    startResetButton.disabled = false;
+                } else {
+                    startResetButton.disabled = true;
+                }
+            }
+        }
+        
+        /**
+         * Adds a new player from the new input field.
+         * @param {string} name The name to add.
+         */
+        function addNewPlayer(name) {
+            if (gameState.isGameStarted) {
+                return;
+            }
+
+            if (name && gameState.players.length < 8) {
+                gameState.players.push(name);
+                renderPlayerList();
+                const newInput = document.getElementById('new-player-input');
+                if (newInput) {
+                    newInput.focus();
+                }
+            }
+        }
+
+        /**
+         * Updates a player's name based on a blur or keydown event from an editable field.
+         * @param {Event} event The blur or keydown event.
+         */
+        function updatePlayerName(event) {
+            const newName = event.target.textContent.trim();
+            const index = parseInt(event.target.dataset.playerIndex, 10);
+            
+            if (newName && index !== undefined) {
+                gameState.players[index] = newName;
+                
+                if (gameState.isGameStarted) {
+                    const headerCell = scorecardHead.children[index + 3];
+                    if (headerCell) {
+                        headerCell.textContent = newName;
+                    }
+                }
+            } else {
+                event.target.textContent = gameState.players[index];
+            }
+        }
+
+        /**
+         * Resets the game state and UI to the pre-game state.
+         */
+        function resetGame() {
+            gameState.isGameStarted = false;
+            scorecardBody.innerHTML = '';
+            scorecardHead.innerHTML = `<th class="py-3 px-2 sm:px-4 text-center rounded-tl-lg">Round</th>
+                                     <th class="py-3 px-2 sm:px-4 text-center">Cards</th>
+                                     <th class="py-3 px-2 sm:px-4 text-center">Total Bid</th>`;
+            scorecardFooter.innerHTML = '';
+            renderPlayerList();
+        }
+
+        /**
+         * Initializes the game state and renders the scorecard table structure.
+         */
+        function startGame() {
+            if (gameState.players.length < playersMin) {
+                return;
+            }
+
+            gameState.scores = [];
+            gameState.bids = [];
+            gameState.taken = [];
+            gameState.rounds = [];
+            gameState.currentRound = 0;
+            gameState.isGameStarted = true;
+            
+            renderPlayerList();
+
+            scorecardHead.innerHTML = `<th class="py-3 px-2 sm:px-4 text-center rounded-tl-lg">Round</th>
+                                     <th class="py-3 px-2 sm:px-4 text-center">Cards</th>
+                                     <th class="py-3 px-2 sm:px-4 text-center">Total Bid</th>`;
+            scorecardBody.innerHTML = '';
+
+            gameState.players.forEach(player => {
+                const th = document.createElement('th');
+                th.className = 'py-3 px-2 sm:px-4 text-center';
+                th.textContent = player;
+                scorecardHead.appendChild(th);
+            });
+            scorecardHead.lastChild.classList.add('rounded-tr-lg');
+
+            addRound();
+        }
+
+        /**
+         * Adds a new round to the scorecard table.
+         */
+        function addRound() {
+            const numPlayers = gameState.players.length;
+            
+            const cards = maxCards - gameState.currentRound;
+            
+            if (cards < 1) {
+                gameState.isGameStarted = false;
+                updateTotalScores();
+                renderPlayerList();
+                return;
+            }
+
+            const roundIndex = gameState.currentRound;
+            gameState.rounds.push({ cards });
+
+            gameState.scores[roundIndex] = new Array(numPlayers).fill(0);
+            gameState.bids[roundIndex] = new Array(numPlayers).fill(NaN);
+            gameState.taken[roundIndex] = new Array(numPlayers).fill(NaN);
+
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-gray-400 last:border-b-0';
+            tr.id = `round-${roundIndex}`;
+
+            tr.innerHTML = `<td class="py-2 px-2 sm:px-4 text-center text-gray-500">${roundIndex + 1}</td>
+                            <td class="py-2 px-2 sm:px-4 text-center text-gray-700 font-medium">${cards}</td>
+                            <td id="total-bid-${roundIndex}" class="py-2 px-2 sm:px-4 text-center font-bold text-lg text-yellow-600">0</td>`;
+
+            for (let i = 0; i < numPlayers; i++) {
+                const td = document.createElement('td');
+                td.className = 'py-2 px-2 sm:px-4 text-center';
+                td.innerHTML = `
+                    <div class="flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 text-sm">
+                        <label class="sr-only" for="bid-${roundIndex}-${i}">Bid</label>
+                        <input id="bid-${roundIndex}-${i}" type="number" min="0" max="${cards}" 
+                               class="score-input p-1 rounded bg-gray-100 border border-gray-400 text-gray-800" 
+                               placeholder="Bid" oninput="handleInput(${roundIndex}, ${i}, 'bid', this.value)">
+                        <label class="sr-only" for="taken-${roundIndex}-${i}">Taken</label>
+                        <input id="taken-${roundIndex}-${i}" type="number" min="0" max="${cards}" 
+                               class="score-input p-1 rounded bg-gray-100 border border-gray-400 text-gray-800" 
+                               placeholder="Taken" oninput="handleInput(${roundIndex}, ${i}, 'taken', this.value)">
+                        <span id="score-${roundIndex}-${i}" class="w-12 text-center font-bold text-lg text-blue-600">0</span>
+                    </div>
+                `;
+                tr.appendChild(td);
+            }
+            scorecardBody.appendChild(tr);
+
+            const nextRoundButton = document.getElementById('next-round-btn');
+            if (nextRoundButton) {
+                nextRoundButton.remove();
+            }
+
+            const nextButtonTd = document.createElement('td');
+            nextButtonTd.setAttribute('colspan', numPlayers + 3);
+            nextButtonTd.className = 'py-2 px-4 text-center';
+            
+            const nextButton = document.createElement('button');
+            nextButton.id = 'next-round-btn';
+            nextButton.onclick = addRound;
+            nextButton.className = 'mt-4 px-6 py-2 bg-purple-600 text-white font-bold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-200 transition-all';
+            nextButton.textContent = `Next Round (Round ${roundIndex + 2})`;
+
+            nextButtonTd.appendChild(nextButton);
+            
+            const nextRow = document.createElement('tr');
+            nextRow.appendChild(nextButtonTd);
+
+            scorecardBody.appendChild(nextRow);
+            
+            gameState.currentRound++;
+        }
+
+        /**
+         * Handles input from the bid and taken tricks fields.
+         */
+        function handleInput(roundIndex, playerIndex, type, value) {
+            const numericValue = value.trim() === '' ? NaN : parseInt(value, 10);
+            
+            if (type === 'bid') {
+                gameState.bids[roundIndex][playerIndex] = numericValue;
+                updateTotalBids(roundIndex);
+            } else if (type === 'taken') {
+                gameState.taken[roundIndex][playerIndex] = numericValue;
+            }
+
+            const bid = gameState.bids[roundIndex][playerIndex];
+            const taken = gameState.taken[roundIndex][playerIndex];
+            
+            let score = 0;
+            if (!isNaN(bid) && !isNaN(taken)) {
+                score = calculateScore(bid, taken, roundIndex);
+            }
+            
+            gameState.scores[roundIndex][playerIndex] = score;
+
+            const scoreSpan = document.getElementById(`score-${roundIndex}-${playerIndex}`);
+            if (scoreSpan) {
+                scoreSpan.textContent = score;
+            }
+
+            updateTotalScores();
+        }
+        
+        /**
+         * Calculates the total bids for a specific round and updates the display.
+         * @param {number} roundIndex The index of the round.
+         */
+        function updateTotalBids(roundIndex) {
+            const totalBidCell = document.getElementById(`total-bid-${roundIndex}`);
+            if (totalBidCell) {
+                const totalBid = gameState.bids[roundIndex].reduce((sum, bid) => sum + (isNaN(bid) ? 0 : bid), 0);
+                totalBidCell.textContent = totalBid;
+            }
+        }
+        
+        /**
+         * Calculates the score for a single player in a round based on new rules.
+         * @param {number} bid - The number of tricks bid.
+         * @param {number} taken - The number of tricks taken.
+         * @param {number} roundIndex - The zero-based index of the current round.
+         * @returns {number} The points for the round.
+         */
+        function calculateScore(bid, taken, roundIndex) {
+            if (isNaN(bid) || isNaN(taken)) {
+                return 0;
+            }
+            
+            if (bid === taken) {
+                return 0;
+            } else {
+                const handNumber = roundIndex + 1;
+                const difference = Math.abs(bid - taken);
+                return difference * 10 * handNumber;
+            }
+        }
+
+        /**
+         * Updates the total scores in the table footer.
+         */
+        function updateTotalScores() {
+            const numPlayers = gameState.players.length;
+            const totalScores = new Array(numPlayers).fill(0);
+            
+            scorecardFooter.innerHTML = '';
+            
+            gameState.scores.forEach(roundScores => {
+                roundScores.forEach((score, playerIndex) => {
+                    totalScores[playerIndex] += score;
+                });
+            });
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="py-3 px-2 sm:px-4 text-center rounded-bl-lg">Total</td>
+                            <td class="py-3 px-2 sm:px-4 text-center"></td>
+                            <td class="py-3 px-2 sm:px-4 text-center"></td>`;
+            
+            totalScores.forEach(total => {
+                const td = document.createElement('td');
+                td.className = 'py-3 px-2 sm:px-4 text-center font-extrabold text-2xl';
+                td.textContent = total;
+                tr.appendChild(td);
+            });
+            tr.lastChild.classList.add('rounded-br-lg');
+
+            scorecardFooter.appendChild(tr);
+        }
+
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPlayerList();
+        });
+        
+    </script>
+
+</body>
+</html>
